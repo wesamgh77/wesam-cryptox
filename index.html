@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wesam CryptoX — Live Crypto Markets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0e1a;
+      --surface: rgba(255,255,255,0.05);
+      --border: rgba(255,255,255,0.08);
+      --orange: #f7931a;
+      --cyan: #00d4ff;
+      --purple: #627eea;
+      --green: #00d4a8;
+      --red: #ff4d4d;
+      --text: #ffffff;
+      --muted: #8892a4;
+      --font-body: 'Inter', sans-serif;
+      --font-head: 'Space Grotesk', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS BACKGROUND ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      height: 68px;
+      background: rgba(10,14,26,0.75);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-head);
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo .logo-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--orange), var(--purple));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 0 18px rgba(247,147,26,0.45);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .btn-connect {
+      padding: 9px 20px;
+      border-radius: 8px;
+      border: 1.5px solid var(--cyan);
+      background: transparent;
+      color: var(--cyan);
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-connect:hover {
+      background: rgba(0,212,255,0.12);
+      box-shadow: 0 0 18px rgba(0,212,255,0.3);
+    }
+
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .nav-hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: opacity 0.2s;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 5% 60px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(98,126,234,0.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 40% at 80% 80%, rgba(247,147,26,0.08) 0%, transparent 60%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.3);
+      background: rgba(0,212,255,0.06);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero-badge .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .hero-title {
+      font-family: var(--font-head);
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      background: linear-gradient(135deg, #fff 0%, var(--cyan) 40%, var(--orange) 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% 200%;
+      animation: gradient-shift 5s ease infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 44px;
+    }
+
+    /* ── COUNTDOWN ── */
+    .countdown-wrap {
+      margin-bottom: 44px;
+    }
+
+    .countdown-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .countdown {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cd-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 72px;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cd-block::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(247,147,26,0.08), rgba(98,126,234,0.08));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .cd-block:hover::before { opacity: 1; }
+
+    .cd-num {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--orange);
+      text-shadow: 0 0 20px rgba(247,147,26,0.5);
+      line-height: 1;
+    }
+
+    .cd-unit {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 5px;
+    }
+
+    .cd-sep {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--orange);
+      align-self: center;
+      opacity: 0.4;
+    }
+
+    /* ── HERO BUTTONS ── */
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      padding: 14px 30px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--orange), #ff6b35);
+      border: none;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 0 24px rgba(247,147,26,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 36px rgba(247,147,26,0.6);
+    }
+
+    .btn-outline {
+      padding: 14px 30px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* ── HERO LAYOUT (two-column) ── */
+    #hero {
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: left !important;
+      gap: 60px;
+    }
+
+    .hero-left {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .hero-right {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── PROFILE PHOTO ── */
+    .profile-frame {
+      position: relative;
+      width: 340px;
+      height: 340px;
+    }
+
+    .profile-frame::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: conic-gradient(var(--orange), var(--cyan), var(--purple), var(--orange));
+      animation: spin-ring 4s linear infinite;
+      z-index: 0;
+    }
+
+    .profile-frame::after {
+      content: '';
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      background: conic-gradient(var(--orange), var(--cyan), var(--purple), var(--orange));
+      opacity: 0.18;
+      filter: blur(14px);
+      animation: spin-ring 4s linear infinite reverse;
+      z-index: 0;
+    }
+
+    @keyframes spin-ring {
+      to { transform: rotate(360deg); }
+    }
+
+    .profile-img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      border: 4px solid var(--bg);
+      box-shadow: 0 0 40px rgba(247,147,26,0.25), 0 0 80px rgba(98,126,234,0.15);
+    }
+
+    .profile-badge {
+      position: absolute;
+      bottom: 16px;
+      right: 10px;
+      z-index: 2;
+      background: linear-gradient(135deg, var(--orange), #ff6b35);
+      color: #fff;
+      font-family: var(--font-head);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 5px 13px;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+      box-shadow: 0 0 14px rgba(247,147,26,0.5);
+      white-space: nowrap;
+    }
+
+    .stats-floating {
+      position: absolute;
+      z-index: 2;
+      background: rgba(10,14,26,0.85);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-family: var(--font-head);
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    .stats-floating.left {
+      left: -70px;
+      top: 80px;
+    }
+
+    .stats-floating.top-r {
+      right: -60px;
+      top: 30px;
+    }
+
+    .sf-num {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+
+    .sf-label { color: var(--muted); font-size: 0.68rem; margin-top: 2px; }
+
+    @media (max-width: 960px) {
+      #hero { flex-direction: column !important; text-align: center !important; gap: 40px; }
+      .hero-left { align-items: center !important; }
+      .profile-frame { width: 260px; height: 260px; }
+      .stats-floating.left { left: -20px; top: -20px; }
+      .stats-floating.top-r { right: -20px; top: -20px; }
+    }
+
+    @media (max-width: 600px) {
+      .profile-frame { width: 210px; height: 210px; }
+      .stats-floating { display: none; }
+    }
+
+    /* ── FLOATING COIN ICONS ── */
+    .floating-coins {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .coin-float {
+      position: absolute;
+      font-size: 1.8rem;
+      opacity: 0.12;
+      animation: float-coin linear infinite;
+    }
+
+    @keyframes float-coin {
+      0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.12; }
+      90% { opacity: 0.12; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── TICKER ── */
+    .ticker-wrap {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      background: rgba(0,0,0,0.4);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 13px 0;
+    }
+
+    .ticker-track {
+      display: flex;
+      gap: 0;
+      white-space: nowrap;
+      animation: ticker-scroll 32s linear infinite;
+    }
+
+    .ticker-wrap:hover .ticker-track { animation-play-state: paused; }
+
+    @keyframes ticker-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 30px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-right: 1px solid var(--border);
+    }
+
+    .ticker-icon { font-size: 1.1rem; }
+    .ticker-name { color: var(--muted); font-size: 0.78rem; }
+    .ticker-price { font-weight: 600; }
+    .ticker-change { font-size: 0.8rem; font-weight: 600; }
+    .up { color: var(--green); }
+    .down { color: var(--red); }
+
+    /* ── SECTION WRAPPER ── */
+    .section {
+      position: relative;
+      z-index: 1;
+      padding: 80px 5%;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+    }
+
+    .section-sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* ── COINS GRID ── */
+    .coins-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .coin-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .coin-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.25s, border-color 0.25s;
+    }
+
+    .coin-card:hover {
+      transform: translateY(-4px) scale(1.03);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-coin-info {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .coin-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 0 14px rgba(0,0,0,0.4);
+    }
+
+    .coin-name-wrap { display: flex; flex-direction: column; gap: 2px; }
+
+    .coin-name {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .coin-ticker {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .change-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .change-badge.up { background: rgba(0,212,168,0.12); color: var(--green); }
+    .change-badge.down { background: rgba(255,77,77,0.12); color: var(--red); }
+
+    .coin-price {
+      font-family: var(--font-head);
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .coin-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── SPARKLINE ── */
+    .sparkline { width: 100%; height: 48px; }
+
+    .card-bottom {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-trade {
+      padding: 8px 20px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--orange), #ff6b35);
+      border: none;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.15s;
+    }
+
+    .btn-trade:hover {
+      box-shadow: 0 0 18px rgba(247,147,26,0.5);
+      transform: translateY(-1px);
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.35);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 5%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+
+    .stat-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .stat-block:last-child { border-right: none; }
+
+    .stat-num {
+      font-family: var(--font-head);
+      font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+      font-weight: 700;
+      color: var(--cyan);
+      text-shadow: 0 0 20px rgba(0,212,255,0.3);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 5px;
+    }
+
+    /* ── TRENDING ── */
+    .trending-scroll {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .trending-scroll::-webkit-scrollbar { height: 4px; }
+    .trending-scroll::-webkit-scrollbar-track { background: transparent; }
+    .trending-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .trend-card {
+      flex: 0 0 auto;
+      min-width: 180px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .trend-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+
+    .trend-rank {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--orange);
+      min-width: 24px;
+    }
+
+    .trend-info { flex: 1; }
+
+    .trend-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .trend-ticker {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .trend-mini-chart { width: 60px; height: 30px; }
+
+    .fire-title {
+      font-size: 1rem;
+      animation: fire-pulse 1.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes fire-pulse {
+      from { filter: brightness(1); }
+      to { filter: brightness(1.4) drop-shadow(0 0 6px orange); }
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      background: rgba(0,0,0,0.5);
+      border-top: 1px solid var(--border);
+      padding: 50px 5% 30px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-bottom: 36px;
+    }
+
+    .footer-brand { display: flex; flex-direction: column; gap: 10px; }
+
+    .footer-tagline {
+      font-size: 0.85rem;
+      color: var(--muted);
+      max-width: 220px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-note {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.75rem;
+      color: var(--green);
+    }
+
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .coins-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 1px; }
+      .stat-block:nth-child(2) { border-right: none; }
+      .stat-block:nth-child(3) { border-top: 1px solid var(--border); }
+      .stat-block:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+
+    @media (max-width: 600px) {
+      .coins-grid { grid-template-columns: 1fr; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .footer-inner { flex-direction: column; }
+      .cd-sep { display: none; }
+      .hero-btns { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-outline { width: 100%; max-width: 280px; }
+    }
+
+    /* ── MOBILE NAV DRAWER ── */
+    .mobile-nav {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      background: rgba(10,14,26,0.97);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(18px);
+      z-index: 99;
+      padding: 16px 5%;
+    }
+
+    .mobile-nav.open { display: flex; }
+
+    .mobile-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s;
+    }
+
+    .mobile-nav a:last-child { border-bottom: none; }
+    .mobile-nav a:hover { color: var(--text); }
+
+    /* ── EXCHANGE STRIP ── */
+    .exchange-strip {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 28px 5%;
+      background: rgba(0,0,0,0.45);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .exchange-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .exchange-logos {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .exchange-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1.5px solid transparent;
+    }
+
+    .exchange-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .exchange-arrow {
+      font-size: 0.7rem;
+      opacity: 0.7;
+    }
+
+    .exchange-btn.bitoasis {
+      background: rgba(26,108,255,0.1);
+      border-color: rgba(26,108,255,0.35);
+      color: #5b9eff;
+    }
+
+    .exchange-btn.bitoasis:hover {
+      background: rgba(26,108,255,0.2);
+      box-shadow: 0 0 20px rgba(26,108,255,0.25);
+    }
+
+    .exchange-btn.binance {
+      background: rgba(243,186,47,0.1);
+      border-color: rgba(243,186,47,0.35);
+      color: #f3ba2f;
+    }
+
+    .exchange-btn.binance:hover {
+      background: rgba(243,186,47,0.2);
+      box-shadow: 0 0 20px rgba(243,186,47,0.25);
+    }
+
+    .exchange-btn.bubbles {
+      background: rgba(0,212,168,0.1);
+      border-color: rgba(0,212,168,0.35);
+      color: #00d4a8;
+    }
+
+    .exchange-btn.bubbles:hover {
+      background: rgba(0,212,168,0.2);
+      box-shadow: 0 0 20px rgba(0,212,168,0.25);
+    }
+
+    /* ── SAMSUNG COVER OVERLAY ── */
+    .samsung-cover {
+      position: absolute;
+      z-index: 3;
+      background: #182048;
+      border-radius: 4px;
+      /* covers chest-level Samsung text in the circular crop */
+      left: 14%;
+      top: 58%;
+      width: 34%;
+      height: 7%;
+      filter: blur(1px);
+    }
+
+    /* ── STICKY FLOATING AVATAR ── */
+    .floating-avatar {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      opacity: 0;
+      transform: translateY(20px) scale(0.8);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+    }
+
+    .floating-avatar.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .floating-avatar-ring {
+      position: relative;
+      width: 62px; height: 62px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .floating-avatar-ring::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      background: conic-gradient(var(--orange), var(--cyan), var(--purple), var(--orange));
+      animation: spin-ring 3s linear infinite;
+      z-index: 0;
+    }
+
+    .floating-avatar-ring img {
+      position: relative;
+      z-index: 1;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      border: 2px solid var(--bg);
+    }
+
+    .floating-avatar-label {
+      font-family: var(--font-head);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--orange);
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 8px rgba(247,147,26,0.6);
+    }
+
+    /* ── GOLD SECTION ── */
+    #gold { background: rgba(0,0,0,0.2); }
+
+    .gold-header-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+
+    .gold-icon {
+      font-size: 1.8rem;
+      filter: drop-shadow(0 0 10px gold);
+    }
+
+    .gold-price-tag {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .gold-price-main {
+      font-family: var(--font-head);
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255,215,0,0.35);
+    }
+
+    .gold-price-change {
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 8px;
+      background: rgba(0,212,168,0.12);
+      color: var(--green);
+    }
+
+    .gold-chart-container {
+      width: 100%;
+      height: 420px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #131722;
+    }
+
+    /* ── BTC OUTLOOK ── */
+    #btc-outlook {
+      background: linear-gradient(135deg, rgba(247,147,26,0.04), rgba(98,126,234,0.04));
+    }
+
+    .outlook-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .outlook-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .outlook-card.full { grid-column: 1 / -1; }
+
+    .outlook-card-title {
+      font-family: var(--font-head);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .outlook-value {
+      font-family: var(--font-head);
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+
+    .outlook-value.bullish { color: var(--green); }
+    .outlook-value.bearish { color: var(--red); }
+    .outlook-value.neutral { color: var(--cyan); }
+
+    .outlook-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 6px;
+    }
+
+    .sentiment-bar-wrap { margin-top: 14px; }
+
+    .sentiment-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .sentiment-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--red) 0%, var(--orange) 50%, var(--green) 100%);
+      transition: width 1.2s ease;
+    }
+
+    .sentiment-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .indicator-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+
+    .indicator-row:last-child { border-bottom: none; }
+    .ind-name { color: var(--muted); }
+    .ind-val.bear { color: var(--red); font-weight: 600; }
+    .ind-val.bull { color: var(--green); font-weight: 600; }
+    .ind-val.neu  { color: var(--cyan);  font-weight: 600; }
+
+    .outlook-disclaimer {
+      margin-top: 20px;
+      padding: 14px 18px;
+      background: rgba(247,147,26,0.06);
+      border: 1px solid rgba(247,147,26,0.2);
+      border-radius: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 700px) {
+      .outlook-grid { grid-template-columns: 1fr; }
+      .outlook-card.full { grid-column: 1; }
+    }
+
+    /* ── SCROLL REVEAL BASE ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Particle background -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- ── STICKY FLOATING AVATAR ── -->
+<div class="floating-avatar" id="floating-avatar" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <div class="floating-avatar-ring">
+    <img src="wesam.JPG" alt="Wesam"
+         onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=W&size=62&background=0a0e1a&color=f7931a&bold=true'" />
+  </div>
+  <span class="floating-avatar-label">Wesam</span>
+</div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-icon">₿</div>
+    Wesam CryptoX
+  </a>
+  <ul class="nav-links">
+    <li><a href="#markets">Markets</a></li>
+    <li><a href="#gold">Gold</a></li>
+    <li><a href="#btc-outlook">BTC Outlook</a></li>
+    <li><a href="#trending">Live</a></li>
+    <li><a href="#footer">News</a></li>
+  </ul>
+  <button class="btn-connect">Connect Wallet</button>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-nav" id="mobile-nav">
+  <a href="#markets">Markets</a>
+  <a href="#portfolio">Portfolio</a>
+  <a href="#trending">Live</a>
+  <a href="#footer">News</a>
+</div>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="floating-coins" id="floating-coins"></div>
+
+  <!-- LEFT: text content -->
+  <div class="hero-left">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Live Markets — 24/7 Trading
+    </div>
+
+    <h1 class="hero-title">WESAM<br>CRYPTOX</h1>
+    <p class="hero-sub">Track prices, trends, and real-time movements across thousands of crypto assets worldwide.</p>
+
+    <div class="countdown-wrap">
+      <p class="countdown-label">⚡ Next Bitcoin Halving In</p>
+      <div class="countdown">
+        <div class="cd-block"><span class="cd-num" id="cd-days">000</span><span class="cd-unit">Days</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-block"><span class="cd-num" id="cd-hours">00</span><span class="cd-unit">Hours</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-block"><span class="cd-num" id="cd-mins">00</span><span class="cd-unit">Mins</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-block"><span class="cd-num" id="cd-secs">00</span><span class="cd-unit">Secs</span></div>
+      </div>
+    </div>
+
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('markets').scrollIntoView({behavior:'smooth'})">View Markets</button>
+      <button class="btn-outline">Learn More</button>
+    </div>
+  </div><!-- end .hero-left -->
+
+  <!-- RIGHT: profile photo -->
+  <div class="hero-right">
+    <div class="profile-frame">
+      <img class="profile-img" src="wesam.JPG" alt="Wesam"
+           onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Wesam&size=340&background=0a0e1a&color=f7931a&bold=true&font-size=0.35'" />
+      <!-- Covers Samsung text on jacket -->
+      <div class="samsung-cover"></div>
+      <div class="profile-badge">⚡ Wesam CryptoX</div>
+      <div class="stats-floating left">
+        <div class="sf-num">$2.71T</div>
+        <div class="sf-label">Market Cap</div>
+      </div>
+      <div class="stats-floating top-r">
+        <div class="sf-num">+4.2%</div>
+        <div class="sf-label">24h Change</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── TICKER ── -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker-track"></div>
+</div>
+
+<!-- ── COINS GRID ── -->
+<section class="section" id="markets">
+  <div class="section-header reveal">
+    <h2 class="section-title">My CryptoBubbles Watchlist</h2>
+    <span class="section-sub">Your tracked coins · <a href="https://cryptobubbles.net" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;">View on CryptoBubbles ↗</a></span>
+  </div>
+  <div class="coins-grid" id="coins-grid"></div>
+</section>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-bar" id="stats-bar">
+  <div class="stat-block">
+    <div class="stat-num" id="stat-mcap">$0</div>
+    <div class="stat-label">Total Market Cap</div>
+  </div>
+  <div class="stat-block">
+    <div class="stat-num" id="stat-vol">$0</div>
+    <div class="stat-label">24h Volume</div>
+  </div>
+  <div class="stat-block">
+    <div class="stat-num" id="stat-dom">0%</div>
+    <div class="stat-label">BTC Dominance</div>
+  </div>
+  <div class="stat-block">
+    <div class="stat-num" id="stat-coins">0</div>
+    <div class="stat-label">Active Coins</div>
+  </div>
+</div>
+
+<!-- ── TRENDING ── -->
+<section class="section" id="trending">
+  <div class="section-header reveal">
+    <h2 class="section-title">
+      <span class="fire-title">🔥 TRENDING NOW</span>
+    </h2>
+    <span class="section-sub">Top movers in the last hour</span>
+  </div>
+  <div class="trending-scroll" id="trending-scroll"></div>
+</section>
+
+<!-- ── GOLD PRICES ── -->
+<section class="section" id="gold">
+  <div class="section-header reveal">
+    <div class="gold-header-wrap">
+      <span class="gold-icon">🥇</span>
+      <h2 class="section-title">Gold Prices</h2>
+    </div>
+    <span class="section-sub">XAU/USD · Daily chart · Last 30 days</span>
+  </div>
+  <div class="gold-price-tag reveal">
+    <span class="gold-price-main">$3,328.40</span>
+    <span class="gold-price-change">+0.74%</span>
+    <span style="font-size:0.78rem;color:var(--muted);">per troy oz</span>
+  </div>
+  <div class="gold-chart-container reveal">
+    <!-- TradingView Widget: XAUUSD daily chart -->
+    <div class="tradingview-widget-container" style="height:100%;">
+      <iframe
+        src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_gold&symbol=OANDA%3AXAUUSD&interval=D&range=1M&theme=dark&style=1&locale=en&toolbar_bg=%230a0e1a&enable_publishing=false&hide_top_toolbar=false&hide_legend=false&save_image=false&hide_volume=false&withdateranges=true&backgroundColor=%230a0e1a&gridColor=%23182048"
+        style="width:100%;height:420px;border:0;"
+        allowtransparency="true"
+        frameborder="0"
+        scrolling="no">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ── BTC OUTLOOK ── -->
+<section class="section" id="btc-outlook">
+  <div class="section-header reveal">
+    <h2 class="section-title">₿ Bitcoin 2-Week Outlook</h2>
+    <span class="section-sub">Global trader consensus · June 2026</span>
+  </div>
+  <div class="outlook-grid reveal">
+    <div class="outlook-card">
+      <div class="outlook-card-title">Overall Sentiment</div>
+      <div class="outlook-value bearish">Cautiously Bearish</div>
+      <div class="outlook-desc">29 technical indicators signal bearish vs 1 bullish. Market is in a range-bound consolidation phase with mixed momentum signals.</div>
+      <div class="sentiment-bar-wrap">
+        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);">
+          <span>Bearish 89%</span><span>Bullish 11%</span>
+        </div>
+        <div class="sentiment-bar">
+          <div class="sentiment-fill" style="width:11%;"></div>
+        </div>
+        <div class="sentiment-labels"><span>Sell</span><span>Neutral</span><span>Buy</span></div>
+      </div>
+    </div>
+
+    <div class="outlook-card">
+      <div class="outlook-card-title">Key Price Levels</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+        <div class="indicator-row">
+          <span class="ind-name">Strong Support</span>
+          <span class="ind-val bull">$68,300</span>
+        </div>
+        <div class="indicator-row">
+          <span class="ind-name">Near Support</span>
+          <span class="ind-val bull">$72,500 – $73,000</span>
+        </div>
+        <div class="indicator-row">
+          <span class="ind-name">Current Range</span>
+          <span class="ind-val neu">$65,200 – $73,800</span>
+        </div>
+        <div class="indicator-row">
+          <span class="ind-name">First Resistance</span>
+          <span class="ind-val bear">$73,800 – $74,000</span>
+        </div>
+        <div class="indicator-row">
+          <span class="ind-name">Key Breakout</span>
+          <span class="ind-val bear">$75,500+</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="outlook-card">
+      <div class="outlook-card-title">Technical Indicators</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;">
+        <div class="indicator-row"><span class="ind-name">RSI</span><span class="ind-val neu">Neutral Zone — correction near end</span></div>
+        <div class="indicator-row"><span class="ind-name">MACD</span><span class="ind-val bear">Negative — bearish short-term momentum</span></div>
+        <div class="indicator-row"><span class="ind-name">Moving Averages</span><span class="ind-val bear">Below 50-day MA — caution</span></div>
+        <div class="indicator-row"><span class="ind-name">Volume</span><span class="ind-val neu">ETF outflows weighing on price</span></div>
+      </div>
+    </div>
+
+    <div class="outlook-card">
+      <div class="outlook-card-title">Analyst Consensus</div>
+      <div class="outlook-value neutral" style="font-size:1.2rem;margin-bottom:8px;">Range-Bound to Mildly Bullish</div>
+      <div class="outlook-desc">Most analysts expect BTC to consolidate for 1–2 weeks before attempting a breakout. RSI suggests the correction is closer to its end than its beginning. A close above $74K would significantly strengthen the bull case. Macro uncertainty and ETF flow data remain the key short-term drivers to watch.</div>
+    </div>
+  </div>
+  <div class="outlook-disclaimer reveal">
+    ⚠️ This outlook is based on global trader consensus data as of June 2026 sourced from CoinDCX, CryptoNews, and CoinCodex analyst reports. It is for informational purposes only and does not constitute financial advice. Always do your own research before making investment decisions.
+  </div>
+</section>
+
+<!-- ── EXCHANGE PARTNERS STRIP ── -->
+<div class="exchange-strip">
+  <span class="exchange-label">Trade on trusted exchanges</span>
+  <div class="exchange-logos">
+    <a href="https://www.bitoasis.net" target="_blank" rel="noopener" class="exchange-btn bitoasis">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#1a6cff" opacity="0.2"/><circle cx="12" cy="12" r="10" stroke="#1a6cff" stroke-width="1.5"/><text x="12" y="16" text-anchor="middle" font-size="9" fill="#1a6cff" font-weight="bold">B</text></svg>
+      BitOasis
+      <span class="exchange-arrow">↗</span>
+    </a>
+    <a href="https://www.binance.com" target="_blank" rel="noopener" class="exchange-btn binance">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#f3ba2f" opacity="0.2"/><polygon points="12,4 20,12 12,20 4,12" fill="none" stroke="#f3ba2f" stroke-width="1.5"/></svg>
+      Binance
+      <span class="exchange-arrow">↗</span>
+    </a>
+    <a href="https://cryptobubbles.net" target="_blank" rel="noopener" class="exchange-btn bubbles">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" fill="#00d4a8" opacity="0.15"/><circle cx="12" cy="12" r="9" stroke="#00d4a8" stroke-width="1.5"/><circle cx="9" cy="10" r="2.5" fill="#00d4a8" opacity="0.6"/><circle cx="15" cy="13" r="1.8" fill="#00d4a8" opacity="0.4"/></svg>
+      CryptoBubbles
+      <span class="exchange-arrow">↗</span>
+    </a>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer id="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo" style="text-decoration:none;">
+        <div class="logo-icon">₿</div>
+        Wesam CryptoX
+      </a>
+      <p class="footer-tagline">The fastest way to track and trade crypto markets in real time.</p>
+    </div>
+    <div class="footer-links">
+      <a href="#">About</a>
+      <a href="#">API</a>
+      <a href="#">Terms</a>
+      <a href="https://www.bitoasis.net" target="_blank" rel="noopener">BitOasis</a>
+      <a href="https://www.binance.com" target="_blank" rel="noopener">Binance</a>
+      <a href="https://cryptobubbles.net" target="_blank" rel="noopener">CryptoBubbles</a>
+      <a href="#">Twitter</a>
+      <a href="#">Telegram</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-note">All prices are live and updated every 30 seconds. Not financial advice.</p>
+    <div class="live-indicator">
+      <div class="live-dot"></div>
+      Live Data Feed Active
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ── DATA — CryptoBubbles watchlist coins ── */
+  const coins = [
+    { name: 'Bitcoin',  ticker: 'BTC',  icon: '₿', color: '#f7931a', price: 68421.50,  change: +2.34,  mcap: '1.34T', vol: '28.5B', trend: [62,64,63,67,66,68,68.4] },
+    { name: 'Ethereum', ticker: 'ETH',  icon: 'Ξ', color: '#627eea', price: 3812.20,   change: +1.87,  mcap: '458B',  vol: '14.2B', trend: [35,36,37,37.5,36.8,38,38.1] },
+    { name: 'XRP',      ticker: 'XRP',  icon: '✕', color: '#00aae4', price: 0.542,     change: +3.12,  mcap: '30B',   vol: '1.2B',  trend: [0.48,0.49,0.51,0.52,0.53,0.53,0.542] },
+    { name: 'Solana',   ticker: 'SOL',  icon: '◎', color: '#9945ff', price: 178.44,    change: +5.21,  mcap: '82B',   vol: '4.1B',  trend: [15,16,16.5,17,17.5,17.8,17.84] },
+    { name: 'BNB',      ticker: 'BNB',  icon: '⬡', color: '#f3ba2f', price: 608.30,    change: -0.93,  mcap: '88B',   vol: '1.8B',  trend: [62,61,60.5,61,60.8,60.9,60.83] },
+    { name: 'Dogecoin', ticker: 'DOGE', icon: 'Ð', color: '#c2a633', price: 0.163,     change: +4.80,  mcap: '24B',   vol: '1.4B',  trend: [0.14,0.14,0.15,0.15,0.16,0.16,0.163] },
+    { name: 'Avalanche',ticker: 'AVAX', icon: '▲', color: '#e84142', price: 38.72,     change: +6.44,  mcap: '16B',   vol: '620M',  trend: [33,34,35,36,37,38,38.72] },
+    { name: 'Chainlink',ticker: 'LINK', icon: '⬡', color: '#2a5ada', price: 18.34,     change: -1.05,  mcap: '11B',   vol: '490M',  trend: [19.2,19,18.8,18.6,18.5,18.4,18.34] },
+  ];
+
+  const trendingCoins = [
+    { name: 'Pepe',     ticker: 'PEPE', change: +18.4,  price: '0.00001423', trend: [5,6,7,8,10,12,14] },
+    { name: 'Bonk',     ticker: 'BONK', change: +12.7,  price: '0.0000348',  trend: [3,4,5,6,6.5,7,7.2] },
+    { name: 'WIF',      ticker: 'WIF',  change: +9.2,   price: '3.24',       trend: [2.8,2.9,3,3.1,3.2,3.2,3.24] },
+    { name: 'Floki',    ticker: 'FLOKI',change: +7.8,   price: '0.000184',   trend: [1.5,1.6,1.7,1.7,1.8,1.8,1.84] },
+    { name: 'RNDR',     ticker: 'RNDR', change: -4.1,   price: '8.92',       trend: [9.5,9.3,9.1,9,8.95,8.92,8.92] },
+    { name: 'Injective',ticker: 'INJ',  change: +6.3,   price: '32.80',      trend: [30,30.5,31,31.5,32,32.5,32.8] },
+    { name: 'Sui',      ticker: 'SUI',  change: +11.1,  price: '1.87',       trend: [1.6,1.65,1.7,1.75,1.8,1.85,1.87] },
+    { name: 'Aptos',    ticker: 'APT',  change: -2.4,   price: '11.22',      trend: [11.8,11.6,11.5,11.4,11.3,11.25,11.22] },
+  ];
+
+  /* ── SPARKLINE SVG ── */
+  function makeSpark(data, color, width = '100%', height = 48) {
+    const w = 200, h = height;
+    const min = Math.min(...data), max = Math.max(...data);
+    const range = max - min || 1;
+    const pts = data.map((v, i) => {
+      const x = (i / (data.length - 1)) * w;
+      const y = h - ((v - min) / range) * (h - 6) - 3;
+      return `${x},${y}`;
+    }).join(' ');
+    const firstPt = pts.split(' ')[0].split(',');
+    const lastPt = pts.split(' ').at(-1).split(',');
+    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="width:${width};height:${height}px;">
+      <defs>
+        <linearGradient id="sg${Math.random().toString(36).slice(2)}" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="${color}" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${lastPt[0]}" cy="${lastPt[1]}" r="3" fill="${color}"/>
+    </svg>`;
+  }
+
+  /* ── RENDER COINS GRID ── */
+  const grid = document.getElementById('coins-grid');
+  coins.forEach((c, i) => {
+    const upDown = c.change >= 0 ? 'up' : 'down';
+    const sign   = c.change >= 0 ? '+' : '';
+    const div = document.createElement('div');
+    div.className = 'coin-card';
+    div.style.transitionDelay = `${i * 80}ms`;
+    div.style.setProperty('--coin-color', c.color);
+    div.innerHTML = `
+      <div class="card-top">
+        <div class="card-coin-info">
+          <div class="coin-avatar" style="background:${c.color}22;color:${c.color}">${c.icon}</div>
+          <div class="coin-name-wrap">
+            <span class="coin-name">${c.name}</span>
+            <span class="coin-ticker">${c.ticker}</span>
+          </div>
+        </div>
+        <span class="change-badge ${upDown}">${sign}${c.change.toFixed(2)}%</span>
+      </div>
+      <div class="coin-price">$${c.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+      <div class="coin-meta">Market Cap: $${c.mcap} &nbsp;·&nbsp; Vol: $${c.vol}</div>
+      ${makeSpark(c.trend, c.change >= 0 ? '#00d4a8' : '#ff4d4d')}
+      <div class="card-bottom" style="display:flex;gap:8px;flex-wrap:wrap;">
+        <a class="btn-trade" href="https://www.binance.com/en/trade/${c.ticker}_USDT" target="_blank" rel="noopener" style="text-decoration:none;">Binance</a>
+        <a class="btn-trade" href="https://www.bitoasis.net/en/exchange/${c.ticker.toLowerCase()}-aed" target="_blank" rel="noopener" style="text-decoration:none;background:linear-gradient(135deg,#1a6cff,#0044cc);">BitOasis</a>
+      </div>`;
+    div.style.setProperty('box-shadow', `0 0 0px ${c.color}00`);
+    div.addEventListener('mouseenter', () => {
+      div.style.boxShadow = `0 12px 40px ${c.color}30, 0 0 0 1px ${c.color}40`;
+      div.style.borderColor = `${c.color}50`;
+    });
+    div.addEventListener('mouseleave', () => {
+      div.style.boxShadow = '';
+      div.style.borderColor = '';
+    });
+    grid.appendChild(div);
+  });
+
+  /* ── RENDER TICKER ── */
+  const tickerTrack = document.getElementById('ticker-track');
+  const allTickerCoins = [...coins, ...coins];
+  allTickerCoins.forEach(c => {
+    const sign = c.change >= 0 ? '+' : '';
+    const cls  = c.change >= 0 ? 'up' : 'down';
+    tickerTrack.innerHTML += `
+      <span class="ticker-item">
+        <span class="ticker-icon" style="color:${c.color}">${c.icon}</span>
+        <span class="ticker-name">${c.ticker}</span>
+        <span class="ticker-price">$${c.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+        <span class="ticker-change ${cls}">${sign}${c.change.toFixed(2)}%</span>
+      </span>`;
+  });
+
+  /* ── RENDER TRENDING ── */
+  const trendScroll = document.getElementById('trending-scroll');
+  trendingCoins.forEach((c, i) => {
+    const cls  = c.change >= 0 ? 'up' : 'down';
+    const sign = c.change >= 0 ? '+' : '';
+    const div = document.createElement('div');
+    div.className = 'trend-card';
+    div.innerHTML = `
+      <span class="trend-rank">#${i + 1}</span>
+      <div class="trend-info">
+        <div class="trend-name">${c.name}</div>
+        <div class="trend-ticker ${cls}">${sign}${c.change}%</div>
+      </div>
+      ${makeSpark(c.trend, c.change >= 0 ? '#00d4a8' : '#ff4d4d', '60px', 30)}`;
+    trendScroll.appendChild(div);
+  });
+
+  /* ── STATS COUNTER ANIMATION ── */
+  function animateCount(el, target, prefix = '', suffix = '', decimals = 0) {
+    let start = 0;
+    const duration = 1800;
+    const step = timestamp => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = prefix + (eased * target).toFixed(decimals) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = prefix + target.toFixed(decimals) + suffix;
+    };
+    requestAnimationFrame(step);
+  }
+
+  const statsBar = document.getElementById('stats-bar');
+  let statsAnimated = false;
+  const statsObserver = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !statsAnimated) {
+      statsAnimated = true;
+      animateCount(document.getElementById('stat-mcap'), 2.71, '$', 'T', 2);
+      animateCount(document.getElementById('stat-vol'),  98.3, '$', 'B', 1);
+      animateCount(document.getElementById('stat-dom'),  51.4, '',  '%', 1);
+      animateCount(document.getElementById('stat-coins'),23412,'', '',  0);
+    }
+  }, { threshold: 0.3 });
+  statsObserver.observe(statsBar);
+
+  /* ── SCROLL REVEAL ── */
+  const revealEls = document.querySelectorAll('.reveal, .coin-card');
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  /* ── COUNTDOWN to next Bitcoin halving (approx. April 2028) ── */
+  const halvingDate = new Date('2028-04-15T00:00:00Z');
+  function updateCountdown() {
+    const now  = new Date();
+    const diff = halvingDate - now;
+    if (diff <= 0) {
+      document.getElementById('cd-days').textContent  = '000';
+      return;
+    }
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000)  / 60000);
+    const secs  = Math.floor((diff % 60000)    / 1000);
+    document.getElementById('cd-days').textContent  = String(days).padStart(3,'0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+    document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+    document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ── PARTICLE CANVAS ── */
+  (function() {
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function createParticle() {
+      return {
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.3,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25,
+        alpha: Math.random() * 0.5 + 0.1,
+      };
+    }
+
+    function init() {
+      resize();
+      particles = Array.from({ length: 130 }, createParticle);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H;
+        if (p.y > H) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,212,255,${p.alpha})`;
+        ctx.fill();
+      });
+      /* draw faint connecting lines */
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 90) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(0,212,255,${0.06 * (1 - dist / 90)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => { resize(); });
+    init();
+    draw();
+  })();
+
+  /* ── FLOATING COIN ICONS ── */
+  const floatContainer = document.getElementById('floating-coins');
+  const floatSymbols   = ['₿','Ξ','◎','⬡','₳','●','Ð','⟠'];
+  for (let i = 0; i < 14; i++) {
+    const el = document.createElement('div');
+    el.className = 'coin-float';
+    el.textContent = floatSymbols[i % floatSymbols.length];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.animationDuration = (18 + Math.random() * 16) + 's';
+    el.style.animationDelay    = -(Math.random() * 30) + 's';
+    el.style.fontSize = (1.2 + Math.random() * 1.8) + 'rem';
+    floatContainer.appendChild(el);
+  }
+
+  /* ── MOBILE NAV TOGGLE ── */
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-nav').classList.toggle('open');
+  });
+
+  /* ── FLOATING AVATAR — show after scrolling past hero ── */
+  const floatingAvatar = document.getElementById('floating-avatar');
+  const heroSection    = document.getElementById('hero');
+  const avatarObserver = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) {
+      floatingAvatar.classList.add('show');
+    } else {
+      floatingAvatar.classList.remove('show');
+    }
+  }, { threshold: 0.1 });
+  avatarObserver.observe(heroSection);
+
+  /* ── SENTIMENT BAR ANIMATE ── */
+  const sentimentFill = document.querySelector('.sentiment-fill');
+  if (sentimentFill) {
+    const sentObs = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        sentimentFill.style.width = '11%';
+        sentObs.unobserve(entries[0].target);
+      }
+    }, { threshold: 0.5 });
+    sentObs.observe(sentimentFill);
+  }
+</script>
+</body>
+</html>
