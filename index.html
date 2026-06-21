@@ -11,16 +11,17 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0e1a;
+      --bg: #0b0710;
       --surface: rgba(255,255,255,0.05);
-      --border: rgba(255,255,255,0.08);
-      --orange: #f7931a;
-      --cyan: #00d4ff;
-      --purple: #627eea;
+      --border: rgba(201,162,39,0.15);
+      --orange: #c9a227;
+      --cyan: #e8a44a;
+      --purple: #8b3fc8;
       --green: #00d4a8;
       --red: #ff4d4d;
-      --text: #ffffff;
-      --muted: #8892a4;
+      --gold: #c9a227;
+      --text: #f5ead6;
+      --muted: #9e8e6f;
       --font-body: 'Inter', sans-serif;
       --font-head: 'Space Grotesk', sans-serif;
     }
@@ -32,6 +33,10 @@
       color: var(--text);
       font-family: var(--font-body);
       overflow-x: hidden;
+      /* Arabic geometric star pattern overlay */
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='none' stroke='%23c9a227' stroke-width='0.4' opacity='0.18'%3E%3Cpolygon points='60,8 73,45 112,45 80,68 92,105 60,83 28,105 40,68 8,45 47,45'/%3E%3Cpolygon points='60,25 69,52 98,52 75,68 84,95 60,79 36,95 45,68 22,52 51,52' stroke-width='0.3'/%3E%3Crect x='38' y='38' width='44' height='44' rx='2' transform='rotate(45 60 60)' stroke-width='0.35'/%3E%3Ccircle cx='60' cy='60' r='14' stroke-width='0.3'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 120px 120px;
     }
 
     /* ── CANVAS BACKGROUND ── */
@@ -52,9 +57,9 @@
       justify-content: space-between;
       padding: 0 5%;
       height: 68px;
-      background: rgba(10,14,26,0.75);
+      background: rgba(11,7,16,0.82);
       backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(201,162,39,0.18);
     }
 
     .nav-logo {
@@ -183,7 +188,7 @@
       font-weight: 800;
       line-height: 1.1;
       letter-spacing: -1.5px;
-      background: linear-gradient(135deg, #fff 0%, var(--cyan) 40%, var(--orange) 80%);
+      background: linear-gradient(135deg, #f5ead6 0%, #c9a227 40%, #e8a44a 80%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -328,6 +333,34 @@
       justify-content: center !important;
       text-align: left !important;
       gap: 60px;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139,63,200,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(201,162,39,0.12) 0%, transparent 60%);
+    }
+
+    /* Arabic dune silhouette */
+    .dunes-svg {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.18;
+    }
+
+    /* Crescent moon */
+    .crescent {
+      position: absolute;
+      top: 100px; right: 6%;
+      width: 70px; height: 70px;
+      opacity: 0.22;
+      pointer-events: none;
+      z-index: 0;
+      animation: crescent-glow 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes crescent-glow {
+      from { opacity: 0.18; filter: drop-shadow(0 0 6px #c9a227); }
+      to   { opacity: 0.30; filter: drop-shadow(0 0 18px #c9a227); }
     }
 
     .hero-left {
@@ -1224,6 +1257,7 @@
   <ul class="nav-links">
     <li><a href="#markets">Markets</a></li>
     <li><a href="#gold">Gold</a></li>
+    <li><a href="#oil">Oil</a></li>
     <li><a href="#btc-outlook">BTC Outlook</a></li>
     <li><a href="#trending">Live</a></li>
     <li><a href="#footer">News</a></li>
@@ -1244,6 +1278,18 @@
 <!-- ── HERO ── -->
 <section id="hero">
   <div class="floating-coins" id="floating-coins"></div>
+
+  <!-- Arabic crescent moon -->
+  <svg class="crescent" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M70,20 A38,38 0 1,0 70,80 A28,28 0 1,1 70,20 Z" fill="#c9a227"/>
+    <circle cx="78" cy="28" r="4" fill="#c9a227"/>
+  </svg>
+
+  <!-- Desert dunes silhouette -->
+  <svg class="dunes-svg" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,200 L0,140 C120,80 240,160 360,130 C480,100 560,60 720,90 C880,120 960,60 1080,80 C1200,100 1320,140 1440,120 L1440,200 Z" fill="#c9a227"/>
+    <path d="M0,200 L0,160 C180,110 300,180 480,150 C660,120 780,80 960,110 C1140,140 1300,160 1440,140 L1440,200 Z" fill="#8b3fc8" opacity="0.5"/>
+  </svg>
 
   <!-- LEFT: text content -->
   <div class="hero-left">
@@ -1364,6 +1410,52 @@
         frameborder="0"
         scrolling="no">
       </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ── OIL PRICES ── -->
+<section class="section" id="oil" style="background:rgba(0,0,0,0.15);">
+  <div class="section-header reveal">
+    <div class="gold-header-wrap">
+      <span class="gold-icon" style="filter:drop-shadow(0 0 10px #4a90d9);">🛢️</span>
+      <h2 class="section-title">Crude Oil Prices</h2>
+    </div>
+    <span class="section-sub">WTI &amp; Brent · Daily chart · Last 30 days</span>
+  </div>
+  <div class="gold-price-tag reveal">
+    <span class="gold-price-main" style="color:#4a90d9;text-shadow:0 0 20px rgba(74,144,217,0.35);">$78.42</span>
+    <span class="gold-price-change" style="background:rgba(255,77,77,0.12);color:var(--red);">-0.38%</span>
+    <span style="font-size:0.78rem;color:var(--muted);">WTI per barrel</span>
+    <span style="font-size:0.78rem;color:var(--muted);margin-left:18px;">Brent:</span>
+    <span class="gold-price-main" style="color:#4a90d9;font-size:1.6rem;text-shadow:0 0 20px rgba(74,144,217,0.35);">$82.15</span>
+    <span class="gold-price-change" style="background:rgba(255,77,77,0.12);color:var(--red);">-0.21%</span>
+  </div>
+  <div class="gold-chart-container reveal" style="height:420px;">
+    <iframe
+      src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_oil&symbol=USOIL&interval=D&range=1M&theme=dark&style=1&locale=en&toolbar_bg=%230b0710&enable_publishing=false&hide_top_toolbar=false&withdateranges=true&backgroundColor=%230b0710&gridColor=%231a1020"
+      style="width:100%;height:420px;border:0;"
+      allowtransparency="true"
+      frameborder="0"
+      scrolling="no">
+    </iframe>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:14px;flex-wrap:wrap;" class="reveal">
+    <div style="flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;">
+      <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">WTI — Key Levels</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="indicator-row"><span class="ind-name">Support</span><span class="ind-val bull">$76.00</span></div>
+        <div class="indicator-row"><span class="ind-name">Resistance</span><span class="ind-val bear">$80.50</span></div>
+        <div class="indicator-row"><span class="ind-name">52-Week Range</span><span class="ind-val neu">$67 – $93</span></div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;">
+      <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Market Drivers</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="indicator-row"><span class="ind-name">OPEC+ Output</span><span class="ind-val bear">Cuts extended</span></div>
+        <div class="indicator-row"><span class="ind-name">USD Index</span><span class="ind-val bear">Pressuring prices</span></div>
+        <div class="indicator-row"><span class="ind-name">Demand Outlook</span><span class="ind-val neu">Stable — mixed</span></div>
+      </div>
     </div>
   </div>
 </section>
@@ -1539,13 +1631,15 @@
 
   /* ── RENDER COINS GRID ── */
   const grid = document.getElementById('coins-grid');
+  const liveRefs = {}; /* ticker → { priceEl, changeEl, card } */
+
   coins.forEach((c, i) => {
     const upDown = c.change >= 0 ? 'up' : 'down';
     const sign   = c.change >= 0 ? '+' : '';
     const div = document.createElement('div');
     div.className = 'coin-card';
+    div.id = `card-${c.ticker}`;
     div.style.transitionDelay = `${i * 80}ms`;
-    div.style.setProperty('--coin-color', c.color);
     div.innerHTML = `
       <div class="card-top">
         <div class="card-coin-info">
@@ -1555,16 +1649,15 @@
             <span class="coin-ticker">${c.ticker}</span>
           </div>
         </div>
-        <span class="change-badge ${upDown}">${sign}${c.change.toFixed(2)}%</span>
+        <span class="change-badge ${upDown}" id="chg-${c.ticker}">${sign}${c.change.toFixed(2)}%</span>
       </div>
-      <div class="coin-price">$${c.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
-      <div class="coin-meta">Market Cap: $${c.mcap} &nbsp;·&nbsp; Vol: $${c.vol}</div>
+      <div class="coin-price" id="prc-${c.ticker}">$${c.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: c.price < 1 ? 4 : 2})}</div>
+      <div class="coin-meta">Vol 24h: $${c.vol} &nbsp;·&nbsp; MCap: $${c.mcap}</div>
       ${makeSpark(c.trend, c.change >= 0 ? '#00d4a8' : '#ff4d4d')}
       <div class="card-bottom" style="display:flex;gap:8px;flex-wrap:wrap;">
         <a class="btn-trade" href="https://www.binance.com/en/trade/${c.ticker}_USDT" target="_blank" rel="noopener" style="text-decoration:none;">Binance</a>
         <a class="btn-trade" href="https://www.bitoasis.net/en/exchange/${c.ticker.toLowerCase()}-aed" target="_blank" rel="noopener" style="text-decoration:none;background:linear-gradient(135deg,#1a6cff,#0044cc);">BitOasis</a>
       </div>`;
-    div.style.setProperty('box-shadow', `0 0 0px ${c.color}00`);
     div.addEventListener('mouseenter', () => {
       div.style.boxShadow = `0 12px 40px ${c.color}30, 0 0 0 1px ${c.color}40`;
       div.style.borderColor = `${c.color}50`;
@@ -1574,21 +1667,72 @@
       div.style.borderColor = '';
     });
     grid.appendChild(div);
+    liveRefs[c.ticker] = {
+      priceEl:  document.getElementById(`prc-${c.ticker}`),
+      changeEl: document.getElementById(`chg-${c.ticker}`),
+      color: c.color,
+      lastPrice: c.price,
+      decimals: c.price < 1 ? 4 : 2,
+    };
   });
+
+  /* ── BINANCE WEBSOCKET — live prices ── */
+  function connectBinanceWS() {
+    const streams = coins.map(c => `${c.ticker.toLowerCase()}usdt@miniTicker`).join('/');
+    const ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+
+    ws.onmessage = e => {
+      try {
+        const { data } = JSON.parse(e.data);
+        const ticker = data.s.replace('USDT', '');
+        const ref    = liveRefs[ticker];
+        if (!ref) return;
+
+        const price  = parseFloat(data.c);
+        const pct    = parseFloat(data.P);
+        const sign   = pct >= 0 ? '+' : '';
+        const upDown = pct >= 0 ? 'up' : 'down';
+
+        /* flash animation on price change */
+        const flash = price > ref.lastPrice ? '#00d4a820' : '#ff4d4d20';
+        ref.priceEl.style.transition = 'background 0.3s';
+        ref.priceEl.style.background = flash;
+        setTimeout(() => ref.priceEl.style.background = '', 400);
+
+        ref.priceEl.textContent  = '$' + price.toLocaleString('en-US', { minimumFractionDigits: ref.decimals, maximumFractionDigits: ref.decimals });
+        ref.changeEl.textContent = `${sign}${pct.toFixed(2)}%`;
+        ref.changeEl.className   = `change-badge ${upDown}`;
+        ref.lastPrice = price;
+
+        /* update ticker strip too */
+        const tickerPrc = document.querySelector(`.ticker-live-${ticker}`);
+        const tickerChg = document.querySelector(`.ticker-live-chg-${ticker}`);
+        if (tickerPrc) tickerPrc.textContent = '$' + price.toLocaleString('en-US', { minimumFractionDigits: ref.decimals, maximumFractionDigits: ref.decimals });
+        if (tickerChg) { tickerChg.textContent = `${sign}${pct.toFixed(2)}%`; tickerChg.className = `ticker-change ${upDown} ticker-live-chg-${ticker}`; }
+      } catch {}
+    };
+
+    ws.onclose = () => setTimeout(connectBinanceWS, 3000); /* auto-reconnect */
+    ws.onerror = () => ws.close();
+  }
+  connectBinanceWS();
 
   /* ── RENDER TICKER ── */
   const tickerTrack = document.getElementById('ticker-track');
-  const allTickerCoins = [...coins, ...coins];
-  allTickerCoins.forEach(c => {
-    const sign = c.change >= 0 ? '+' : '';
-    const cls  = c.change >= 0 ? 'up' : 'down';
-    tickerTrack.innerHTML += `
-      <span class="ticker-item">
+  /* duplicate for seamless loop */
+  [0, 1].forEach(() => {
+    coins.forEach(c => {
+      const sign = c.change >= 0 ? '+' : '';
+      const cls  = c.change >= 0 ? 'up' : 'down';
+      const span = document.createElement('span');
+      span.className = 'ticker-item';
+      span.innerHTML = `
         <span class="ticker-icon" style="color:${c.color}">${c.icon}</span>
         <span class="ticker-name">${c.ticker}</span>
-        <span class="ticker-price">$${c.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
-        <span class="ticker-change ${cls}">${sign}${c.change.toFixed(2)}%</span>
-      </span>`;
+        <span class="ticker-price ticker-live-${c.ticker}">$${c.price.toLocaleString('en-US', {minimumFractionDigits: c.price < 1 ? 4 : 2})}</span>
+        <span class="ticker-change ${cls} ticker-live-chg-${c.ticker}">${sign}${c.change.toFixed(2)}%</span>`;
+      tickerTrack.appendChild(span);
+    });
   });
 
   /* ── RENDER TRENDING ── */
@@ -1707,7 +1851,12 @@
         if (p.y > H) p.y = 0;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,212,255,${p.alpha})`;
+        /* alternate gold and purple particles */
+        ctx.fillStyle = i % 3 === 0
+          ? `rgba(201,162,39,${p.alpha})`
+          : i % 3 === 1
+          ? `rgba(139,63,200,${p.alpha * 0.7})`
+          : `rgba(232,164,74,${p.alpha * 0.8})`;
         ctx.fill();
       });
       /* draw faint connecting lines */
@@ -1720,7 +1869,7 @@
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(0,212,255,${0.06 * (1 - dist / 90)})`;
+            ctx.strokeStyle = `rgba(201,162,39,${0.05 * (1 - dist / 90)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
